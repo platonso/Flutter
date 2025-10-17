@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../../models/attraction.dart';
 
 class AttractionsScreen extends StatefulWidget {
   const AttractionsScreen({super.key});
@@ -8,21 +9,21 @@ class AttractionsScreen extends StatefulWidget {
 }
 
 class _AttractionsScreenState extends State<AttractionsScreen> {
-  final List<Map<String, dynamic>> _attractions = [
-    {
-      'name': 'Эйфелева башня',
-      'location': 'Париж, Франция',
-      'icon': '🗼',
-      'description': 'Символ Парижа и Франции, построенная в 1889 году',
-      'isFavorite': false,
-    },
-    {
-      'name': 'Колизей',
-      'location': 'Рим, Италия',
-      'icon': '🏛️',
-      'description': 'Древний амфитеатр, символ Римской империи',
-      'isFavorite': false,
-    },
+  final List<Attraction> _attractions = [
+    const Attraction(
+      name: 'Эйфелева башня',
+      location: 'Париж, Франция',
+      icon: '🗼',
+      description: 'Символ Парижа и Франции, построенная в 1889 году',
+      isFavorite: false,
+    ),
+    const Attraction(
+      name: 'Колизей',
+      location: 'Рим, Италия',
+      icon: '🏛️',
+      description: 'Древний амфитеатр, символ Римской империи',
+      isFavorite: false,
+    ),
   ];
 
   final TextEditingController _nameController = TextEditingController();
@@ -33,13 +34,13 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
   void _addAttraction() {
     if (_nameController.text.isEmpty || _locationController.text.isEmpty) return;
     setState(() {
-      _attractions.add({
-        'name': _nameController.text,
-        'location': _locationController.text,
-        'icon': _iconController.text.isNotEmpty ? _iconController.text : '📍',
-        'description': _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
-        'isFavorite': false,
-      });
+      _attractions.add(Attraction(
+        name: _nameController.text,
+        location: _locationController.text,
+        icon: _iconController.text.isNotEmpty ? _iconController.text : '📍',
+        description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
+        isFavorite: false,
+      ));
     });
     _nameController.clear();
     _locationController.clear();
@@ -49,7 +50,9 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
 
   void _toggleFavorite(int index) {
     setState(() {
-      _attractions[index]['isFavorite'] = !_attractions[index]['isFavorite'];
+      _attractions[index] = _attractions[index].copyWith(
+        isFavorite: !_attractions[index].isFavorite,
+      );
     });
   }
 
@@ -129,12 +132,12 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: attraction['isFavorite']
+                            color: attraction.isFavorite
                                 ? CupertinoColors.systemOrange.withOpacity(0.1)
                                 : CupertinoColors.systemGrey6,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: attraction['isFavorite']
+                              color: attraction.isFavorite
                                   ? CupertinoColors.systemOrange
                                   : CupertinoColors.systemGrey4,
                               width: 1,
@@ -143,7 +146,7 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
                           child: Row(
                             children: [
                               Text(
-                                attraction['icon'],
+                                attraction.icon,
                                 style: const TextStyle(fontSize: 32),
                               ),
                               const SizedBox(width: 16),
@@ -152,7 +155,7 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      attraction['name'],
+                                      attraction.name,
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600,
@@ -161,7 +164,7 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      attraction['location'],
+                                      attraction.location,
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: CupertinoColors.secondaryLabel,
@@ -169,7 +172,7 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      attraction['description'],
+                                      attraction.description,
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: CupertinoColors.tertiaryLabel,
@@ -179,10 +182,10 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
                                 ),
                               ),
                               Icon(
-                                attraction['isFavorite']
+                                attraction.isFavorite
                                     ? CupertinoIcons.heart_fill
                                     : CupertinoIcons.heart,
-                                color: attraction['isFavorite']
+                                color: attraction.isFavorite
                                     ? CupertinoColors.systemRed
                                     : CupertinoColors.systemGrey,
                                 size: 24,

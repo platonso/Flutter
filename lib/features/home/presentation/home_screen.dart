@@ -3,7 +3,7 @@ import 'widgets/welcome_card.dart';
 import '../../countries/presentation/countries_screen.dart';
 import '../../attractions/presentation/attractions_screen.dart';
 import '../../planner/presentation/planner_screen.dart';
-// import '../../about/presentation/about_screen.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -49,7 +49,6 @@ class HomeScreen extends StatelessWidget {
                   CupertinoPageRoute(builder: (context) => const PlannerScreen()),
                 ),
               ),
-              // Раздел "О приложении" скрыт
             ],
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../../models/trip.dart';
 
 class PlannerScreen extends StatefulWidget {
   const PlannerScreen({super.key});
@@ -8,7 +9,7 @@ class PlannerScreen extends StatefulWidget {
 }
 
 class _PlannerScreenState extends State<PlannerScreen> {
-  final List<Map<String, dynamic>> _trips = [];
+  final List<Trip> _trips = [];
   final TextEditingController _destinationController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
@@ -16,12 +17,12 @@ class _PlannerScreenState extends State<PlannerScreen> {
   void _addTrip() {
     if (_destinationController.text.isNotEmpty) {
       setState(() {
-        _trips.add({
-          'destination': _destinationController.text,
-          'date': _dateController.text.isNotEmpty ? _dateController.text : 'Дата не указана',
-          'notes': _notesController.text.isNotEmpty ? _notesController.text : 'Без заметок',
-          'isCompleted': false,
-        });
+        _trips.add(Trip(
+          destination: _destinationController.text,
+          date: _dateController.text.isNotEmpty ? _dateController.text : 'Дата не указана',
+          notes: _notesController.text.isNotEmpty ? _notesController.text : 'Без заметок',
+          isCompleted: false,
+        ));
       });
       _destinationController.clear();
       _dateController.clear();
@@ -31,7 +32,9 @@ class _PlannerScreenState extends State<PlannerScreen> {
 
   void _toggleCompleted(int index) {
     setState(() {
-      _trips[index]['isCompleted'] = !_trips[index]['isCompleted'];
+      _trips[index] = _trips[index].copyWith(
+        isCompleted: !_trips[index].isCompleted,
+      );
     });
   }
 
@@ -40,6 +43,97 @@ class _PlannerScreenState extends State<PlannerScreen> {
       _trips.removeAt(index);
     });
   }
+
+
+
+// ignore: unused_element
+Widget _buildTripItem(Trip trip, int index) {
+  return Container(
+    margin: const EdgeInsets.only(bottom: 12),
+    child: CupertinoButton(
+      padding: EdgeInsets.zero,
+      onPressed: () => _toggleCompleted(index),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: trip.isCompleted
+              ? CupertinoColors.systemGreen.withOpacity(0.1)
+              : CupertinoColors.systemGrey6,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: trip.isCompleted
+                ? CupertinoColors.systemGreen
+                : CupertinoColors.systemGrey4,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              trip.isCompleted
+                  ? CupertinoIcons.checkmark_circle_fill
+                  : CupertinoIcons.circle,
+              color: trip.isCompleted
+                  ? CupertinoColors.systemGreen
+                  : CupertinoColors.systemGrey,
+              size: 24,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    trip.destination,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: trip.isCompleted
+                          ? CupertinoColors.systemGrey
+                          : CupertinoColors.label,
+                      decoration: trip.isCompleted
+                          ? TextDecoration.lineThrough
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    trip.date,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: CupertinoColors.secondaryLabel,
+                    ),
+                  ),
+                  if (trip.notes != 'Без заметок') ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      trip.notes,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: CupertinoColors.tertiaryLabel,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () => _deleteTrip(index),
+              child: const Icon(
+                CupertinoIcons.trash,
+                color: CupertinoColors.systemRed,
+                size: 20,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -119,12 +213,12 @@ class _PlannerScreenState extends State<PlannerScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: trip['isCompleted']
+                                  color: trip.isCompleted
                                       ? CupertinoColors.systemGreen.withOpacity(0.1)
                                       : CupertinoColors.systemGrey6,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: trip['isCompleted']
+                                    color: trip.isCompleted
                                         ? CupertinoColors.systemGreen
                                         : CupertinoColors.systemGrey4,
                                     width: 1,
@@ -133,10 +227,10 @@ class _PlannerScreenState extends State<PlannerScreen> {
                                 child: Row(
                                   children: [
                                     Icon(
-                                      trip['isCompleted']
+                                      trip.isCompleted
                                           ? CupertinoIcons.checkmark_circle_fill
                                           : CupertinoIcons.circle,
-                                      color: trip['isCompleted']
+                                      color: trip.isCompleted
                                           ? CupertinoColors.systemGreen
                                           : CupertinoColors.systemGrey,
                                       size: 24,
@@ -147,30 +241,30 @@ class _PlannerScreenState extends State<PlannerScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            trip['destination'],
+                                            trip.destination,
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
-                                              color: trip['isCompleted']
+                                              color: trip.isCompleted
                                                   ? CupertinoColors.systemGrey
                                                   : CupertinoColors.label,
-                                              decoration: trip['isCompleted']
+                                              decoration: trip.isCompleted
                                                   ? TextDecoration.lineThrough
                                                   : null,
                                             ),
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            trip['date'],
+                                            trip.date,
                                             style: const TextStyle(
                                               fontSize: 14,
                                               color: CupertinoColors.secondaryLabel,
                                             ),
                                           ),
-                                          if (trip['notes'] != 'Без заметок') ...[
+                                          if (trip.notes != 'Без заметок') ...[
                                             const SizedBox(height: 4),
                                             Text(
-                                              trip['notes'],
+                                              trip.notes,
                                               style: const TextStyle(
                                                 fontSize: 12,
                                                 color: CupertinoColors.tertiaryLabel,

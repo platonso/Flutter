@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../../models/country.dart';
 
 class CountriesScreen extends StatefulWidget {
   const CountriesScreen({super.key});
@@ -8,21 +9,21 @@ class CountriesScreen extends StatefulWidget {
 }
 
 class _CountriesScreenState extends State<CountriesScreen> {
-  final List<Map<String, dynamic>> _countries = [
-    {
-      'name': 'Франция',
-      'capital': 'Париж',
-      'flag': '🇫🇷',
-      'description': 'Страна романтики, искусства и изысканной кухни',
-      'isVisited': false,
-    },
-    {
-      'name': 'Япония',
-      'capital': 'Токио',
-      'flag': '🇯🇵',
-      'description': 'Страна восходящего солнца с богатой культурой',
-      'isVisited': false,
-    },
+  final List<Country> _countries = [
+    const Country(
+      name: 'Франция',
+      capital: 'Париж',
+      flag: '🇫🇷',
+      description: 'Страна романтики, искусства и изысканной кухни',
+      isVisited: false,
+    ),
+    const Country(
+      name: 'Япония',
+      capital: 'Токио',
+      flag: '🇯🇵',
+      description: 'Страна восходящего солнца с богатой культурой',
+      isVisited: false,
+    ),
   ];
 
   final TextEditingController _nameController = TextEditingController();
@@ -33,13 +34,13 @@ class _CountriesScreenState extends State<CountriesScreen> {
   void _addCountry() {
     if (_nameController.text.isEmpty || _capitalController.text.isEmpty) return;
     setState(() {
-      _countries.add({
-        'name': _nameController.text,
-        'capital': _capitalController.text,
-        'flag': _flagController.text.isNotEmpty ? _flagController.text : '🏳️',
-        'description': _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
-        'isVisited': false,
-      });
+      _countries.add(Country(
+        name: _nameController.text,
+        capital: _capitalController.text,
+        flag: _flagController.text.isNotEmpty ? _flagController.text : '🏳️',
+        description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
+        isVisited: false,
+      ));
     });
     _nameController.clear();
     _capitalController.clear();
@@ -49,7 +50,9 @@ class _CountriesScreenState extends State<CountriesScreen> {
 
   void _toggleVisited(int index) {
     setState(() {
-      _countries[index]['isVisited'] = !_countries[index]['isVisited'];
+      _countries[index] = _countries[index].copyWith(
+        isVisited: !_countries[index].isVisited,
+      );
     });
   }
 
@@ -129,12 +132,12 @@ class _CountriesScreenState extends State<CountriesScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: country['isVisited']
+                            color: country.isVisited
                                 ? CupertinoColors.systemGreen.withOpacity(0.1)
                                 : CupertinoColors.systemGrey6,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: country['isVisited']
+                              color: country.isVisited
                                   ? CupertinoColors.systemGreen
                                   : CupertinoColors.systemGrey4,
                               width: 1,
@@ -143,7 +146,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                           child: Row(
                             children: [
                               Text(
-                                country['flag'],
+                                country.flag,
                                 style: const TextStyle(fontSize: 32),
                               ),
                               const SizedBox(width: 16),
@@ -152,7 +155,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      country['name'],
+                                      country.name,
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600,
@@ -161,7 +164,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Столица: ${country['capital']}',
+                                      'Столица: ${country.capital}',
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: CupertinoColors.secondaryLabel,
@@ -169,7 +172,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      country['description'],
+                                      country.description,
                                       style: const TextStyle(
                                         fontSize: 12,
                                         color: CupertinoColors.tertiaryLabel,
@@ -179,10 +182,10 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                 ),
                               ),
                               Icon(
-                                country['isVisited']
+                                country.isVisited
                                     ? CupertinoIcons.checkmark_circle_fill
                                     : CupertinoIcons.circle,
-                                color: country['isVisited']
+                                color: country.isVisited
                                     ? CupertinoColors.systemGreen
                                     : CupertinoColors.systemGrey,
                                 size: 24,
