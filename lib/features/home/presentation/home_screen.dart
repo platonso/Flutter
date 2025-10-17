@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import '../features/countries/presentation/countries_screen.dart';
-import '../features/attractions/presentation/attractions_screen.dart';
-import '../features/planner/presentation/planner_screen.dart';
+import 'widgets/welcome_card.dart';
+import '../../countries/presentation/countries_screen.dart';
+import '../../attractions/presentation/attractions_screen.dart';
+import '../../planner/presentation/planner_screen.dart';
+// import '../../about/presentation/about_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -9,7 +11,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(middle: Text('Путешествия')),
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text('Путешествия'),
+      ),
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -17,14 +21,14 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
+              const WelcomeCard(),
+              const SizedBox(height: 20),
               _buildMenuButton(
                 context,
                 '🌍 Страны',
                 'Изучите разные страны мира',
                 () => Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (context) => const CountriesScreen(),
-                  ),
+                  CupertinoPageRoute(builder: (context) => const CountriesScreen()),
                 ),
               ),
               const SizedBox(height: 12),
@@ -33,9 +37,7 @@ class HomeScreen extends StatelessWidget {
                 '🏛️ Достопримечательности',
                 'Узнайте о знаменитых местах',
                 () => Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (context) => const AttractionsScreen(),
-                  ),
+                  CupertinoPageRoute(builder: (context) => const AttractionsScreen()),
                 ),
               ),
               const SizedBox(height: 12),
@@ -44,11 +46,10 @@ class HomeScreen extends StatelessWidget {
                 '📅 Планировщик',
                 'Спланируйте свое путешествие',
                 () => Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (context) => const PlannerScreen(),
-                  ),
+                  CupertinoPageRoute(builder: (context) => const PlannerScreen()),
                 ),
               ),
+              // Раздел "О приложении" скрыт
             ],
           ),
         ),
@@ -106,3 +107,5 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+

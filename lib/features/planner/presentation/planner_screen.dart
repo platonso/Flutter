@@ -52,7 +52,6 @@ class _PlannerScreenState extends State<PlannerScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Форма добавления поездки
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -96,7 +95,6 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Список поездок
               Expanded(
                 child: _trips.isEmpty
                     ? const Center(
@@ -121,12 +119,12 @@ class _PlannerScreenState extends State<PlannerScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: trip['isCompleted'] 
+                                  color: trip['isCompleted']
                                       ? CupertinoColors.systemGreen.withOpacity(0.1)
                                       : CupertinoColors.systemGrey6,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: trip['isCompleted'] 
+                                    color: trip['isCompleted']
                                         ? CupertinoColors.systemGreen
                                         : CupertinoColors.systemGrey4,
                                     width: 1,
@@ -135,10 +133,10 @@ class _PlannerScreenState extends State<PlannerScreen> {
                                 child: Row(
                                   children: [
                                     Icon(
-                                      trip['isCompleted'] 
+                                      trip['isCompleted']
                                           ? CupertinoIcons.checkmark_circle_fill
                                           : CupertinoIcons.circle,
-                                      color: trip['isCompleted'] 
+                                      color: trip['isCompleted']
                                           ? CupertinoColors.systemGreen
                                           : CupertinoColors.systemGrey,
                                       size: 24,
@@ -153,10 +151,10 @@ class _PlannerScreenState extends State<PlannerScreen> {
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
-                                              color: trip['isCompleted'] 
+                                              color: trip['isCompleted']
                                                   ? CupertinoColors.systemGrey
                                                   : CupertinoColors.label,
-                                              decoration: trip['isCompleted'] 
+                                              decoration: trip['isCompleted']
                                                   ? TextDecoration.lineThrough
                                                   : null,
                                             ),
@@ -206,3 +204,6 @@ class _PlannerScreenState extends State<PlannerScreen> {
     );
   }
 }
+
+
+

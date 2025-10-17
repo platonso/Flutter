@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'screens/home_screen.dart';
+import 'features/home/presentation/home_screen.dart';
 
 void main() {
   runApp(const TravelApp());
