@@ -4,6 +4,7 @@ class Attraction {
   final String icon;
   final String description;
   final bool isFavorite;
+  final String imageUrl;
 
   const Attraction({
     required this.name,
@@ -11,6 +12,7 @@ class Attraction {
     required this.icon,
     required this.description,
     required this.isFavorite,
+    required this.imageUrl,
   });
 
   Attraction copyWith({
@@ -19,6 +21,7 @@ class Attraction {
     String? icon,
     String? description,
     bool? isFavorite,
+    String? imageUrl,
   }) {
     return Attraction(
       name: name ?? this.name,
@@ -26,6 +29,7 @@ class Attraction {
       icon: icon ?? this.icon,
       description: description ?? this.description,
       isFavorite: isFavorite ?? this.isFavorite,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -36,6 +40,7 @@ class Attraction {
       'icon': icon,
       'description': description,
       'isFavorite': isFavorite,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -43,15 +48,16 @@ class Attraction {
     return Attraction(
       name: map['name'] ?? '',
       location: map['location'] ?? '',
-      icon: map['icon'] ?? '📍',
+      icon: map['icon'] ?? 'Место',
       description: map['description'] ?? 'Описание отсутствует',
       isFavorite: map['isFavorite'] ?? false,
+      imageUrl: map['imageUrl'] ?? '',
     );
   }
 
   @override
   String toString() {
-    return 'Attraction(name: $name, location: $location, icon: $icon, description: $description, isFavorite: $isFavorite)';
+    return 'Attraction(name: $name, location: $location, icon: $icon, description: $description, isFavorite: $isFavorite, imageUrl: $imageUrl)';
   }
 
   @override
@@ -62,7 +68,8 @@ class Attraction {
         other.location == location &&
         other.icon == icon &&
         other.description == description &&
-        other.isFavorite == isFavorite;
+        other.isFavorite == isFavorite &&
+        other.imageUrl == imageUrl;
   }
 
   @override
@@ -71,6 +78,7 @@ class Attraction {
         location.hashCode ^
         icon.hashCode ^
         description.hashCode ^
-        isFavorite.hashCode;
+        isFavorite.hashCode ^
+        imageUrl.hashCode;
   }
 }

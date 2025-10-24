@@ -3,12 +3,14 @@ class Trip {
   final String date;
   final String notes;
   final bool isCompleted;
+  final String imageUrl;
 
   const Trip({
     required this.destination,
     required this.date,
     required this.notes,
     required this.isCompleted,
+    required this.imageUrl,
   });
 
   Trip copyWith({
@@ -16,12 +18,14 @@ class Trip {
     String? date,
     String? notes,
     bool? isCompleted,
+    String? imageUrl,
   }) {
     return Trip(
       destination: destination ?? this.destination,
       date: date ?? this.date,
       notes: notes ?? this.notes,
       isCompleted: isCompleted ?? this.isCompleted,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -31,6 +35,7 @@ class Trip {
       'date': date,
       'notes': notes,
       'isCompleted': isCompleted,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -40,12 +45,13 @@ class Trip {
       date: map['date'] ?? 'Дата не указана',
       notes: map['notes'] ?? 'Без заметок',
       isCompleted: map['isCompleted'] ?? false,
+      imageUrl: map['imageUrl'] ?? '',
     );
   }
 
   @override
   String toString() {
-    return 'Trip(destination: $destination, date: $date, notes: $notes, isCompleted: $isCompleted)';
+    return 'Trip(destination: $destination, date: $date, notes: $notes, isCompleted: $isCompleted, imageUrl: $imageUrl)';
   }
 
   @override
@@ -55,7 +61,8 @@ class Trip {
         other.destination == destination &&
         other.date == date &&
         other.notes == notes &&
-        other.isCompleted == isCompleted;
+        other.isCompleted == isCompleted &&
+        other.imageUrl == imageUrl;
   }
 
   @override
@@ -63,6 +70,7 @@ class Trip {
     return destination.hashCode ^
         date.hashCode ^
         notes.hashCode ^
-        isCompleted.hashCode;
+        isCompleted.hashCode ^
+        imageUrl.hashCode;
   }
 }

@@ -1,31 +1,31 @@
 class Country {
   final String name;
   final String capital;
-  final String flag;
   final String description;
   final bool isVisited;
+  final String imageUrl;
 
   const Country({
     required this.name,
     required this.capital,
-    required this.flag,
     required this.description,
     required this.isVisited,
+    required this.imageUrl,
   });
 
   Country copyWith({
     String? name,
     String? capital,
-    String? flag,
     String? description,
     bool? isVisited,
+    String? imageUrl,
   }) {
     return Country(
       name: name ?? this.name,
       capital: capital ?? this.capital,
-      flag: flag ?? this.flag,
       description: description ?? this.description,
       isVisited: isVisited ?? this.isVisited,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -33,9 +33,9 @@ class Country {
     return {
       'name': name,
       'capital': capital,
-      'flag': flag,
       'description': description,
       'isVisited': isVisited,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -43,15 +43,15 @@ class Country {
     return Country(
       name: map['name'] ?? '',
       capital: map['capital'] ?? '',
-      flag: map['flag'] ?? '🏳️',
       description: map['description'] ?? 'Описание отсутствует',
       isVisited: map['isVisited'] ?? false,
+      imageUrl: map['imageUrl'] ?? '',
     );
   }
 
   @override
   String toString() {
-    return 'Country(name: $name, capital: $capital, flag: $flag, description: $description, isVisited: $isVisited)';
+    return 'Country(name: $name, capital: $capital, description: $description, isVisited: $isVisited, imageUrl: $imageUrl)';
   }
 
   @override
@@ -60,17 +60,17 @@ class Country {
     return other is Country &&
         other.name == name &&
         other.capital == capital &&
-        other.flag == flag &&
         other.description == description &&
-        other.isVisited == isVisited;
+        other.isVisited == isVisited &&
+        other.imageUrl == imageUrl;
   }
 
   @override
   int get hashCode {
     return name.hashCode ^
         capital.hashCode ^
-        flag.hashCode ^
         description.hashCode ^
-        isVisited.hashCode;
+        isVisited.hashCode ^
+        imageUrl.hashCode;
   }
 }

@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 20),
               _buildMenuButton(
                 context,
-                '🌍 Страны',
+                'Страны',
                 'Изучите разные страны мира',
                 () => Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => const CountriesScreen()),
@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _buildMenuButton(
                 context,
-                '🏛️ Достопримечательности',
+                'Достопримечательности',
                 'Узнайте о знаменитых местах',
                 () => Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => const AttractionsScreen()),
@@ -43,7 +43,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _buildMenuButton(
                 context,
-                '📅 Планировщик',
+                'Планировщик',
                 'Спланируйте свое путешествие',
                 () => Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => const PlannerScreen()),
