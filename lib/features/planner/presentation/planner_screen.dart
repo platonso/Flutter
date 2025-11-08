@@ -1,9 +1,13 @@
 import 'package:flutter/cupertino.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../models/trip.dart';
 
 class PlannerScreen extends StatefulWidget {
-  const PlannerScreen({super.key});
+  final bool showNavigationBar;
+  
+  const PlannerScreen({
+    super.key,
+    this.showNavigationBar = true,
+  });
 
   @override
   State<PlannerScreen> createState() => _PlannerScreenState();
@@ -14,7 +18,6 @@ class _PlannerScreenState extends State<PlannerScreen> {
   final TextEditingController _destinationController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
-  final TextEditingController _imageUrlController = TextEditingController();
 
   void _addTrip() {
     if (_destinationController.text.isNotEmpty) {
@@ -24,13 +27,12 @@ class _PlannerScreenState extends State<PlannerScreen> {
           date: _dateController.text.isNotEmpty ? _dateController.text : 'Дата не указана',
           notes: _notesController.text.isNotEmpty ? _notesController.text : 'Без заметок',
           isCompleted: false,
-          imageUrl: _imageUrlController.text.isNotEmpty ? _imageUrlController.text : 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400',
+          imageUrl: '',
         ));
       });
       _destinationController.clear();
       _dateController.clear();
       _notesController.clear();
-      _imageUrlController.clear();
     }
   }
 
@@ -142,9 +144,11 @@ Widget _buildTripItem(Trip trip, int index) {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Планировщик'),
-      ),
+      navigationBar: widget.showNavigationBar
+          ? const CupertinoNavigationBar(
+              middle: Text('Планировщик'),
+            )
+          : null,
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -183,12 +187,6 @@ Widget _buildTripItem(Trip trip, int index) {
                       placeholder: 'Заметки (необязательно)',
                       padding: const EdgeInsets.all(12),
                       maxLines: 2,
-                    ),
-                    const SizedBox(height: 12),
-                    CupertinoTextField(
-                      controller: _imageUrlController,
-                      placeholder: 'URL изображения (необязательно)',
-                      padding: const EdgeInsets.all(12),
                     ),
                     const SizedBox(height: 16),
                     CupertinoButton.filled(
@@ -236,33 +234,17 @@ Widget _buildTripItem(Trip trip, int index) {
                                 ),
                                 child: Row(
                                   children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: CachedNetworkImage(
-                                        imageUrl: trip.imageUrl,
-                                        width: 60,
-                                        height: 60,
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) => Container(
-                                          width: 60,
-                                          height: 60,
-                                          color: CupertinoColors.systemGrey5,
-                                          child: const Icon(
-                                            CupertinoIcons.photo,
-                                            color: CupertinoColors.systemGrey,
-                                            size: 24,
-                                          ),
-                                        ),
-                                        errorWidget: (context, url, error) => Container(
-                                          width: 60,
-                                          height: 60,
-                                          color: CupertinoColors.systemGrey5,
-                                          child: const Icon(
-                                            CupertinoIcons.exclamationmark_triangle,
-                                            color: CupertinoColors.systemRed,
-                                            size: 20,
-                                          ),
-                                        ),
+                                    Container(
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        color: CupertinoColors.systemGrey5,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        CupertinoIcons.calendar,
+                                        color: CupertinoColors.systemPurple,
+                                        size: 30,
                                       ),
                                     ),
                                     const SizedBox(width: 12),

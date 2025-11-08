@@ -1,19 +1,16 @@
 import 'package:flutter/cupertino.dart';
-import 'widgets/welcome_card.dart';
-import '../../countries/presentation/countries_screen.dart';
-import '../../attractions/presentation/attractions_screen.dart';
-import '../../planner/presentation/planner_screen.dart';
-
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final bool showNavigationBar;
+
+  const HomeScreen({super.key, this.showNavigationBar = true});
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Путешествия'),
-      ),
+      navigationBar: showNavigationBar
+          ? const CupertinoNavigationBar(middle: Text('Путешествия'))
+          : null,
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -21,33 +18,46 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
-              const WelcomeCard(),
-              const SizedBox(height: 20),
-              _buildMenuButton(
+              const Text(
+                'Выберите раздел',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              _buildNavigationButton(
                 context,
                 'Страны',
                 'Изучите разные страны мира',
-                () => Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (context) => const CountriesScreen()),
-                ),
+                CupertinoIcons.globe,
+                () => Navigator.of(context).pushNamed('/countries'),
+                isRouted: true,
               ),
               const SizedBox(height: 12),
-              _buildMenuButton(
+              _buildNavigationButton(
                 context,
                 'Достопримечательности',
                 'Узнайте о знаменитых местах',
-                () => Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (context) => const AttractionsScreen()),
-                ),
+                CupertinoIcons.location_fill,
+                () => Navigator.of(context).pushNamed('/attractions'),
+                isRouted: true,
               ),
               const SizedBox(height: 12),
-              _buildMenuButton(
+              _buildNavigationButton(
                 context,
                 'Планировщик',
                 'Спланируйте свое путешествие',
-                () => Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (context) => const PlannerScreen()),
-                ),
+                CupertinoIcons.calendar,
+                () => Navigator.of(context).pushNamed('/planner'),
+                isRouted: true,
+              ),
+              const SizedBox(height: 12),
+              _buildNavigationButton(
+                context,
+                'Статистика',
+                'Просмотр статистики путешествий',
+                CupertinoIcons.chart_bar_fill,
+                () => Navigator.of(context).pushNamed('/statistics'),
+                isRouted: true,
               ),
             ],
           ),
@@ -56,23 +66,50 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuButton(
+  Widget _buildNavigationButton(
     BuildContext context,
     String title,
     String subtitle,
-    VoidCallback onTap,
-  ) {
+    IconData icon,
+    VoidCallback onTap, {
+    bool isRouted = false,
+  }) {
     return CupertinoButton(
       padding: EdgeInsets.zero,
       onPressed: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: CupertinoColors.systemGrey6,
+          color: isRouted
+              ? CupertinoColors.systemOrange.withOpacity(0.1)
+              : CupertinoColors.systemGrey6,
           borderRadius: BorderRadius.circular(12),
+          border: isRouted
+              ? Border.all(
+                  color: CupertinoColors.systemOrange.withOpacity(0.3),
+                  width: 1,
+                )
+              : null,
         ),
         child: Row(
           children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isRouted
+                    ? CupertinoColors.systemOrange.withOpacity(0.2)
+                    : CupertinoColors.activeBlue.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                icon,
+                color: isRouted
+                    ? CupertinoColors.systemOrange
+                    : CupertinoColors.activeBlue,
+                size: 32,
+              ),
+            ),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

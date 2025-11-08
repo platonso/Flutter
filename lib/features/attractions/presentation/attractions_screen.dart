@@ -1,9 +1,13 @@
 import 'package:flutter/cupertino.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../models/attraction.dart';
 
 class AttractionsScreen extends StatefulWidget {
-  const AttractionsScreen({super.key});
+  final bool showNavigationBar;
+  
+  const AttractionsScreen({
+    super.key,
+    this.showNavigationBar = true,
+  });
 
   @override
   State<AttractionsScreen> createState() => _AttractionsScreenState();
@@ -17,8 +21,7 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
       icon: 'Башня',
       description: 'Символ Парижа и Франции, построенная в 1889 году',
       isFavorite: false,
-      imageUrl:
-          'https://i.pinimg.com/736x/20/5a/82/205a82adac90cbbead16ed8cefbd3cbb.jpg',
+      imageUrl: '',
     ),
     const Attraction(
       name: 'Колизей',
@@ -26,8 +29,7 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
       icon: 'Амфитеатр',
       description: 'Древний амфитеатр, символ Римской империи',
       isFavorite: false,
-      imageUrl:
-          'https://i.pinimg.com/originals/67/71/be/6771bec00b3f69cf5395c3024e56cc77.jpg',
+      imageUrl: '',
     ),
   ];
 
@@ -35,11 +37,11 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _iconController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
-  final TextEditingController _imageUrlController = TextEditingController();
 
   void _addAttraction() {
-    if (_nameController.text.isEmpty || _locationController.text.isEmpty)
+    if (_nameController.text.isEmpty || _locationController.text.isEmpty) {
       return;
+    }
     setState(() {
       _attractions.add(
         Attraction(
@@ -52,9 +54,7 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
               ? _descController.text
               : 'Описание отсутствует',
           isFavorite: false,
-          imageUrl: _imageUrlController.text.isNotEmpty
-              ? _imageUrlController.text
-              : 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400',
+          imageUrl: '',
         ),
       );
     });
@@ -62,7 +62,6 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
     _locationController.clear();
     _iconController.clear();
     _descController.clear();
-    _imageUrlController.clear();
   }
 
   void _toggleFavorite(int index) {
@@ -82,9 +81,11 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Достопримечательности'),
-      ),
+      navigationBar: widget.showNavigationBar
+          ? const CupertinoNavigationBar(
+              middle: Text('Достопримечательности'),
+            )
+          : null,
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -130,12 +131,6 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
                       padding: const EdgeInsets.all(12),
                       maxLines: 2,
                     ),
-                    const SizedBox(height: 8),
-                    CupertinoTextField(
-                      controller: _imageUrlController,
-                      placeholder: 'URL изображения (необязательно)',
-                      padding: const EdgeInsets.all(12),
-                    ),
                     const SizedBox(height: 12),
                     CupertinoButton.filled(
                       onPressed: _addAttraction,
@@ -171,48 +166,17 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
                           ),
                           child: Row(
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: CachedNetworkImage(
-                                  imageUrl: attraction.imageUrl,
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => Container(
-                                    width: 80,
-                                    height: 80,
-                                    color: CupertinoColors.systemGrey5,
-                                    child: const Icon(
-                                      CupertinoIcons.photo,
-                                      color: CupertinoColors.systemGrey,
-                                      size: 32,
-                                    ),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      Container(
-                                        width: 80,
-                                        height: 80,
-                                        color: CupertinoColors.systemGrey5,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              attraction.icon,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const Icon(
-                                              CupertinoIcons
-                                                  .exclamationmark_triangle,
-                                              color: CupertinoColors.systemRed,
-                                              size: 16,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                              Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  color: CupertinoColors.systemGrey5,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  CupertinoIcons.location_fill,
+                                  color: CupertinoColors.systemOrange,
+                                  size: 40,
                                 ),
                               ),
                               const SizedBox(width: 16),
