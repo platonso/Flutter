@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import '../../../models/trip.dart';
+import '../../../services/data_service.dart';
 
 class PlannerScreen extends StatefulWidget {
   const PlannerScreen({super.key});
@@ -9,7 +10,9 @@ class PlannerScreen extends StatefulWidget {
 }
 
 class _PlannerScreenState extends State<PlannerScreen> {
-  final List<Trip> _trips = [];
+  final DataService _dataService = DataService();
+
+  List<Trip> get _trips => _dataService.trips;
   final TextEditingController _destinationController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
@@ -17,7 +20,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
   void _addTrip() {
     if (_destinationController.text.isNotEmpty) {
       setState(() {
-        _trips.add(Trip(
+        _dataService.addTrip(Trip(
           destination: _destinationController.text,
           date: _dateController.text.isNotEmpty ? _dateController.text : 'Дата не указана',
           notes: _notesController.text.isNotEmpty ? _notesController.text : 'Без заметок',
@@ -32,15 +35,16 @@ class _PlannerScreenState extends State<PlannerScreen> {
 
   void _toggleCompleted(int index) {
     setState(() {
-      _trips[index] = _trips[index].copyWith(
-        isCompleted: !_trips[index].isCompleted,
-      );
+      final trip = _trips[index];
+      _dataService.updateTrip(index, trip.copyWith(
+        isCompleted: !trip.isCompleted,
+      ));
     });
   }
 
   void _deleteTrip(int index) {
     setState(() {
-      _trips.removeAt(index);
+      _dataService.deleteTrip(index);
     });
   }
 

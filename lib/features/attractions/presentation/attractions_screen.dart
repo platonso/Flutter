@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import '../../../models/attraction.dart';
+import '../../../services/data_service.dart';
 
 class AttractionsScreen extends StatefulWidget {
   const AttractionsScreen({super.key});
@@ -9,22 +10,15 @@ class AttractionsScreen extends StatefulWidget {
 }
 
 class _AttractionsScreenState extends State<AttractionsScreen> {
-  final List<Attraction> _attractions = [
-    const Attraction(
-      name: 'Эйфелева башня',
-      location: 'Париж, Франция',
-      icon: '🗼',
-      description: 'Символ Парижа и Франции, построенная в 1889 году',
-      isFavorite: false,
-    ),
-    const Attraction(
-      name: 'Колизей',
-      location: 'Рим, Италия',
-      icon: '🏛️',
-      description: 'Древний амфитеатр, символ Римской империи',
-      isFavorite: false,
-    ),
-  ];
+  final DataService _dataService = DataService();
+
+  @override
+  void initState() {
+    super.initState();
+    _dataService.initializeDefaultData();
+  }
+
+  List<Attraction> get _attractions => _dataService.attractions;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
@@ -34,7 +28,7 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
   void _addAttraction() {
     if (_nameController.text.isEmpty || _locationController.text.isEmpty) return;
     setState(() {
-      _attractions.add(Attraction(
+      _dataService.addAttraction(Attraction(
         name: _nameController.text,
         location: _locationController.text,
         icon: _iconController.text.isNotEmpty ? _iconController.text : '📍',
@@ -50,15 +44,16 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
 
   void _toggleFavorite(int index) {
     setState(() {
-      _attractions[index] = _attractions[index].copyWith(
-        isFavorite: !_attractions[index].isFavorite,
-      );
+      final attraction = _attractions[index];
+      _dataService.updateAttraction(index, attraction.copyWith(
+        isFavorite: !attraction.isFavorite,
+      ));
     });
   }
 
   void _deleteAttraction(int index) {
     setState(() {
-      _attractions.removeAt(index);
+      _dataService.deleteAttraction(index);
     });
   }
 

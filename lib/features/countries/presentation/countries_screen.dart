@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import '../../../models/country.dart';
+import '../../../services/data_service.dart';
 
 class CountriesScreen extends StatefulWidget {
   const CountriesScreen({super.key});
@@ -9,22 +10,15 @@ class CountriesScreen extends StatefulWidget {
 }
 
 class _CountriesScreenState extends State<CountriesScreen> {
-  final List<Country> _countries = [
-    const Country(
-      name: 'Франция',
-      capital: 'Париж',
-      flag: '🇫🇷',
-      description: 'Страна романтики, искусства и изысканной кухни',
-      isVisited: false,
-    ),
-    const Country(
-      name: 'Япония',
-      capital: 'Токио',
-      flag: '🇯🇵',
-      description: 'Страна восходящего солнца с богатой культурой',
-      isVisited: false,
-    ),
-  ];
+  final DataService _dataService = DataService();
+
+  @override
+  void initState() {
+    super.initState();
+    _dataService.initializeDefaultData();
+  }
+
+  List<Country> get _countries => _dataService.countries;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _capitalController = TextEditingController();
@@ -34,7 +28,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
   void _addCountry() {
     if (_nameController.text.isEmpty || _capitalController.text.isEmpty) return;
     setState(() {
-      _countries.add(Country(
+      _dataService.addCountry(Country(
         name: _nameController.text,
         capital: _capitalController.text,
         flag: _flagController.text.isNotEmpty ? _flagController.text : '🏳️',
@@ -50,15 +44,16 @@ class _CountriesScreenState extends State<CountriesScreen> {
 
   void _toggleVisited(int index) {
     setState(() {
-      _countries[index] = _countries[index].copyWith(
-        isVisited: !_countries[index].isVisited,
-      );
+      final country = _countries[index];
+      _dataService.updateCountry(index, country.copyWith(
+        isVisited: !country.isVisited,
+      ));
     });
   }
 
   void _deleteCountry(int index) {
     setState(() {
-      _countries.removeAt(index);
+      _dataService.deleteCountry(index);
     });
   }
 

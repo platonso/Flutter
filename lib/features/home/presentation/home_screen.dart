@@ -3,6 +3,7 @@ import 'widgets/welcome_card.dart';
 import '../../countries/presentation/countries_screen.dart';
 import '../../attractions/presentation/attractions_screen.dart';
 import '../../planner/presentation/planner_screen.dart';
+import '../../statistics/presentation/statistics_screen.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -47,6 +48,15 @@ class HomeScreen extends StatelessWidget {
                 'Спланируйте свое путешествие',
                 () => Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => const PlannerScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildMenuButton(
+                context,
+                '📊 Статистика',
+                'Просмотрите статистику по всем разделам',
+                () => Navigator.of(context).push(
+                  CupertinoPageRoute(builder: (context) => const StatisticsScreen()),
                 ),
               ),
             ],
