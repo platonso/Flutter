@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import '../../../models/trip.dart';
+import '../../../core/providers/trips_provider.dart';
 
 class PlannerScreen extends StatefulWidget {
   const PlannerScreen({super.key});
@@ -9,134 +10,148 @@ class PlannerScreen extends StatefulWidget {
 }
 
 class _PlannerScreenState extends State<PlannerScreen> {
-  final List<Trip> _trips = [];
   final TextEditingController _destinationController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
-  void _addTrip() {
+  @override
+  void dispose() {
+    _destinationController.dispose();
+    _dateController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  void _addTrip(BuildContext context) {
+    final provider = TripsProvider.of(context);
+    if (provider == null) return;
+
     if (_destinationController.text.isNotEmpty) {
-      setState(() {
-        _trips.add(Trip(
-          destination: _destinationController.text,
-          date: _dateController.text.isNotEmpty ? _dateController.text : 'Дата не указана',
-          notes: _notesController.text.isNotEmpty ? _notesController.text : 'Без заметок',
-          isCompleted: false,
-        ));
-      });
+      provider.addTrip(Trip(
+        destination: _destinationController.text,
+        date: _dateController.text.isNotEmpty ? _dateController.text : 'Дата не указана',
+        notes: _notesController.text.isNotEmpty ? _notesController.text : 'Без заметок',
+        isCompleted: false,
+      ));
       _destinationController.clear();
       _dateController.clear();
       _notesController.clear();
     }
   }
 
-  void _toggleCompleted(int index) {
-    setState(() {
-      _trips[index] = _trips[index].copyWith(
-        isCompleted: !_trips[index].isCompleted,
-      );
-    });
+  void _toggleCompleted(BuildContext context, int index) {
+    final provider = TripsProvider.of(context);
+    provider?.toggleCompleted(index);
   }
 
-  void _deleteTrip(int index) {
-    setState(() {
-      _trips.removeAt(index);
-    });
+  void _deleteTrip(BuildContext context, int index) {
+    final provider = TripsProvider.of(context);
+    provider?.deleteTrip(index);
   }
-
-
-
-// ignore: unused_element
-Widget _buildTripItem(Trip trip, int index) {
-  return Container(
-    margin: const EdgeInsets.only(bottom: 12),
-    child: CupertinoButton(
-      padding: EdgeInsets.zero,
-      onPressed: () => _toggleCompleted(index),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: trip.isCompleted
-              ? CupertinoColors.systemGreen.withOpacity(0.1)
-              : CupertinoColors.systemGrey6,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
+  Widget _buildTripItem(BuildContext context, Trip trip, int index) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: () => _toggleCompleted(context, index),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
             color: trip.isCompleted
-                ? CupertinoColors.systemGreen
-                : CupertinoColors.systemGrey4,
-            width: 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              trip.isCompleted
-                  ? CupertinoIcons.checkmark_circle_fill
-                  : CupertinoIcons.circle,
+                ? CupertinoColors.systemGreen.withOpacity(0.1)
+                : CupertinoColors.systemGrey6,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
               color: trip.isCompleted
                   ? CupertinoColors.systemGreen
-                  : CupertinoColors.systemGrey,
-              size: 24,
+                  : CupertinoColors.systemGrey4,
+              width: 1,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    trip.destination,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: trip.isCompleted
-                          ? CupertinoColors.systemGrey
-                          : CupertinoColors.label,
-                      decoration: trip.isCompleted
-                          ? TextDecoration.lineThrough
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    trip.date,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: CupertinoColors.secondaryLabel,
-                    ),
-                  ),
-                  if (trip.notes != 'Без заметок') ...[
-                    const SizedBox(height: 4),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                trip.isCompleted
+                    ? CupertinoIcons.checkmark_circle_fill
+                    : CupertinoIcons.circle,
+                color: trip.isCompleted
+                    ? CupertinoColors.systemGreen
+                    : CupertinoColors.systemGrey,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      trip.notes,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: CupertinoColors.tertiaryLabel,
+                      trip.destination,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: trip.isCompleted
+                            ? CupertinoColors.systemGrey
+                            : CupertinoColors.label,
+                        decoration: trip.isCompleted
+                            ? TextDecoration.lineThrough
+                            : null,
                       ),
                     ),
+                    const SizedBox(height: 4),
+                    Text(
+                      trip.date,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: CupertinoColors.secondaryLabel,
+                      ),
+                    ),
+                    if (trip.notes != 'Без заметок') ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        trip.notes,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: CupertinoColors.tertiaryLabel,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () => _deleteTrip(index),
-              child: const Icon(
-                CupertinoIcons.trash,
-                color: CupertinoColors.systemRed,
-                size: 20,
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => _deleteTrip(context, index),
+                child: const Icon(
+                  CupertinoIcons.trash,
+                  color: CupertinoColors.systemRed,
+                  size: 20,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
-
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Получаем провайдер через Inherited Widget
+    final provider = TripsProvider.of(context);
+    
+    if (provider == null) {
+      return const CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          middle: Text('Планировщик'),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: Text('Ошибка: TripsProvider не найден'),
+          ),
+        ),
+      );
+    }
+
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Планировщик'),
@@ -182,7 +197,7 @@ Widget _buildTripItem(Trip trip, int index) {
                     ),
                     const SizedBox(height: 16),
                     CupertinoButton.filled(
-                      onPressed: _addTrip,
+                      onPressed: () => _addTrip(context),
                       child: const Text('Добавить поездку'),
                     ),
                   ],
@@ -190,7 +205,7 @@ Widget _buildTripItem(Trip trip, int index) {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: _trips.isEmpty
+                child: provider.trips.isEmpty
                     ? const Center(
                         child: Text(
                           'Пока нет запланированных поездок\nДобавьте первую!',
@@ -202,92 +217,10 @@ Widget _buildTripItem(Trip trip, int index) {
                         ),
                       )
                     : ListView.builder(
-                        itemCount: _trips.length,
+                        itemCount: provider.trips.length,
                         itemBuilder: (context, index) {
-                          final trip = _trips[index];
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            child: CupertinoButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () => _toggleCompleted(index),
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: trip.isCompleted
-                                      ? CupertinoColors.systemGreen.withOpacity(0.1)
-                                      : CupertinoColors.systemGrey6,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: trip.isCompleted
-                                        ? CupertinoColors.systemGreen
-                                        : CupertinoColors.systemGrey4,
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      trip.isCompleted
-                                          ? CupertinoIcons.checkmark_circle_fill
-                                          : CupertinoIcons.circle,
-                                      color: trip.isCompleted
-                                          ? CupertinoColors.systemGreen
-                                          : CupertinoColors.systemGrey,
-                                      size: 24,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            trip.destination,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              color: trip.isCompleted
-                                                  ? CupertinoColors.systemGrey
-                                                  : CupertinoColors.label,
-                                              decoration: trip.isCompleted
-                                                  ? TextDecoration.lineThrough
-                                                  : null,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            trip.date,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              color: CupertinoColors.secondaryLabel,
-                                            ),
-                                          ),
-                                          if (trip.notes != 'Без заметок') ...[
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              trip.notes,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                color: CupertinoColors.tertiaryLabel,
-                                              ),
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                    CupertinoButton(
-                                      padding: EdgeInsets.zero,
-                                      onPressed: () => _deleteTrip(index),
-                                      child: const Icon(
-                                        CupertinoIcons.trash,
-                                        color: CupertinoColors.systemRed,
-                                        size: 20,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
+                          final trip = provider.trips[index];
+                          return _buildTripItem(context, trip, index);
                         },
                       ),
               ),

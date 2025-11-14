@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import '../../../models/attraction.dart';
+import '../../../core/di/service_locator.dart';
+import '../../../core/services/attractions_service.dart';
 
 class AttractionsScreen extends StatefulWidget {
   const AttractionsScreen({super.key});
@@ -9,39 +12,47 @@ class AttractionsScreen extends StatefulWidget {
 }
 
 class _AttractionsScreenState extends State<AttractionsScreen> {
-  final List<Attraction> _attractions = [
-    const Attraction(
-      name: 'Эйфелева башня',
-      location: 'Париж, Франция',
-      icon: '🗼',
-      description: 'Символ Парижа и Франции, построенная в 1889 году',
-      isFavorite: false,
-    ),
-    const Attraction(
-      name: 'Колизей',
-      location: 'Рим, Италия',
-      icon: '🏛️',
-      description: 'Древний амфитеатр, символ Римской империи',
-      isFavorite: false,
-    ),
-  ];
+  // Получаем сервис через GetIt
+  late final AttractionsService _attractionsService = getIt<AttractionsService>();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _iconController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    // Подписываемся на изменения в сервисе
+    _attractionsService.addListener(_onAttractionsChanged);
+  }
+
+  @override
+  void dispose() {
+    // Отписываемся от изменений
+    _attractionsService.removeListener(_onAttractionsChanged);
+    _nameController.dispose();
+    _locationController.dispose();
+    _iconController.dispose();
+    _descController.dispose();
+    super.dispose();
+  }
+
+  void _onAttractionsChanged() {
+    // Обновляем UI при изменениях в сервисе
+    setState(() {});
+  }
+
   void _addAttraction() {
     if (_nameController.text.isEmpty || _locationController.text.isEmpty) return;
-    setState(() {
-      _attractions.add(Attraction(
-        name: _nameController.text,
-        location: _locationController.text,
-        icon: _iconController.text.isNotEmpty ? _iconController.text : '📍',
-        description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
-        isFavorite: false,
-      ));
-    });
+    // Используем сервис из GetIt для добавления достопримечательности
+    _attractionsService.addAttraction(Attraction(
+      name: _nameController.text,
+      location: _locationController.text,
+      icon: _iconController.text.isNotEmpty ? _iconController.text : '📍',
+      description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
+      isFavorite: false,
+    ));
     _nameController.clear();
     _locationController.clear();
     _iconController.clear();
@@ -49,17 +60,13 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
   }
 
   void _toggleFavorite(int index) {
-    setState(() {
-      _attractions[index] = _attractions[index].copyWith(
-        isFavorite: !_attractions[index].isFavorite,
-      );
-    });
+    // Используем сервис из GetIt для изменения статуса избранного
+    _attractionsService.toggleFavorite(index);
   }
 
   void _deleteAttraction(int index) {
-    setState(() {
-      _attractions.removeAt(index);
-    });
+    // Используем сервис из GetIt для удаления достопримечательности
+    _attractionsService.deleteAttraction(index);
   }
 
   @override
@@ -121,9 +128,9 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
               const SizedBox(height: 16),
               Expanded(
                 child: ListView.builder(
-                  itemCount: _attractions.length,
+                  itemCount: _attractionsService.attractions.length,
                   itemBuilder: (context, index) {
-                    final attraction = _attractions[index];
+                    final attraction = _attractionsService.attractions[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       child: CupertinoButton(

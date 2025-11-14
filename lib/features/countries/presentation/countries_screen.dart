@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import '../../../models/country.dart';
+import '../../../core/di/service_locator.dart';
+import '../../../core/services/countries_service.dart';
 
 class CountriesScreen extends StatefulWidget {
   const CountriesScreen({super.key});
@@ -9,39 +12,47 @@ class CountriesScreen extends StatefulWidget {
 }
 
 class _CountriesScreenState extends State<CountriesScreen> {
-  final List<Country> _countries = [
-    const Country(
-      name: 'Франция',
-      capital: 'Париж',
-      flag: '🇫🇷',
-      description: 'Страна романтики, искусства и изысканной кухни',
-      isVisited: false,
-    ),
-    const Country(
-      name: 'Япония',
-      capital: 'Токио',
-      flag: '🇯🇵',
-      description: 'Страна восходящего солнца с богатой культурой',
-      isVisited: false,
-    ),
-  ];
+  // Получаем сервис через GetIt
+  late final CountriesService _countriesService = getIt<CountriesService>();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _capitalController = TextEditingController();
   final TextEditingController _flagController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    // Подписываемся на изменения в сервисе
+    _countriesService.addListener(_onCountriesChanged);
+  }
+
+  @override
+  void dispose() {
+    // Отписываемся от изменений
+    _countriesService.removeListener(_onCountriesChanged);
+    _nameController.dispose();
+    _capitalController.dispose();
+    _flagController.dispose();
+    _descController.dispose();
+    super.dispose();
+  }
+
+  void _onCountriesChanged() {
+    // Обновляем UI при изменениях в сервисе
+    setState(() {});
+  }
+
   void _addCountry() {
     if (_nameController.text.isEmpty || _capitalController.text.isEmpty) return;
-    setState(() {
-      _countries.add(Country(
-        name: _nameController.text,
-        capital: _capitalController.text,
-        flag: _flagController.text.isNotEmpty ? _flagController.text : '🏳️',
-        description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
-        isVisited: false,
-      ));
-    });
+    // Используем сервис из GetIt для добавления страны
+    _countriesService.addCountry(Country(
+      name: _nameController.text,
+      capital: _capitalController.text,
+      flag: _flagController.text.isNotEmpty ? _flagController.text : '🏳️',
+      description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
+      isVisited: false,
+    ));
     _nameController.clear();
     _capitalController.clear();
     _flagController.clear();
@@ -49,17 +60,13 @@ class _CountriesScreenState extends State<CountriesScreen> {
   }
 
   void _toggleVisited(int index) {
-    setState(() {
-      _countries[index] = _countries[index].copyWith(
-        isVisited: !_countries[index].isVisited,
-      );
-    });
+    // Используем сервис из GetIt для изменения статуса посещения
+    _countriesService.toggleVisited(index);
   }
 
   void _deleteCountry(int index) {
-    setState(() {
-      _countries.removeAt(index);
-    });
+    // Используем сервис из GetIt для удаления страны
+    _countriesService.deleteCountry(index);
   }
 
   @override
@@ -121,9 +128,9 @@ class _CountriesScreenState extends State<CountriesScreen> {
               const SizedBox(height: 16),
               Expanded(
                 child: ListView.builder(
-                  itemCount: _countries.length,
+                  itemCount: _countriesService.countries.length,
                   itemBuilder: (context, index) {
-                    final country = _countries[index];
+                    final country = _countriesService.countries[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       child: CupertinoButton(
