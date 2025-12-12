@@ -4,6 +4,7 @@ import '../../countries/presentation/countries_screen.dart';
 import '../../attractions/presentation/attractions_screen.dart';
 import '../../planner/presentation/planner_screen.dart';
 import '../../statistics/presentation/statistics_screen.dart';
+import '../../checklist/presentation/checklist_screen.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -48,6 +49,15 @@ class HomeScreen extends StatelessWidget {
                 'Спланируйте свое путешествие',
                 () => Navigator.of(context).push(
                   CupertinoPageRoute(builder: (context) => const PlannerScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildMenuButton(
+                context,
+                '✅ Чек-лист',
+                'Соберите вещи для путешествия',
+                () => Navigator.of(context).push(
+                  CupertinoPageRoute(builder: (context) => const ChecklistScreen()),
                 ),
               ),
               const SizedBox(height: 12),

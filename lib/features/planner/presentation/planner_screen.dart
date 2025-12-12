@@ -1,32 +1,28 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/trip.dart';
-import '../../../services/data_service.dart';
+import '../../../providers/trips_providers.dart';
 
-class PlannerScreen extends StatefulWidget {
+class PlannerScreen extends ConsumerStatefulWidget {
   const PlannerScreen({super.key});
 
   @override
-  State<PlannerScreen> createState() => _PlannerScreenState();
+  ConsumerState<PlannerScreen> createState() => _PlannerScreenState();
 }
 
-class _PlannerScreenState extends State<PlannerScreen> {
-  final DataService _dataService = DataService();
-
-  List<Trip> get _trips => _dataService.trips;
+class _PlannerScreenState extends ConsumerState<PlannerScreen> {
   final TextEditingController _destinationController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
   void _addTrip() {
     if (_destinationController.text.isNotEmpty) {
-      setState(() {
-        _dataService.addTrip(Trip(
-          destination: _destinationController.text,
-          date: _dateController.text.isNotEmpty ? _dateController.text : 'Дата не указана',
-          notes: _notesController.text.isNotEmpty ? _notesController.text : 'Без заметок',
-          isCompleted: false,
-        ));
-      });
+      ref.read(tripsProvider.notifier).addTrip(Trip(
+        destination: _destinationController.text,
+        date: _dateController.text.isNotEmpty ? _dateController.text : 'Дата не указана',
+        notes: _notesController.text.isNotEmpty ? _notesController.text : 'Без заметок',
+        isCompleted: false,
+      ));
       _destinationController.clear();
       _dateController.clear();
       _notesController.clear();
@@ -34,18 +30,15 @@ class _PlannerScreenState extends State<PlannerScreen> {
   }
 
   void _toggleCompleted(int index) {
-    setState(() {
-      final trip = _trips[index];
-      _dataService.updateTrip(index, trip.copyWith(
-        isCompleted: !trip.isCompleted,
-      ));
-    });
+    final trips = ref.read(tripsProvider);
+    final trip = trips[index];
+    ref.read(tripsProvider.notifier).updateTrip(index, trip.copyWith(
+      isCompleted: !trip.isCompleted,
+    ));
   }
 
   void _deleteTrip(int index) {
-    setState(() {
-      _dataService.deleteTrip(index);
-    });
+    ref.read(tripsProvider.notifier).deleteTrip(index);
   }
 
 
@@ -141,6 +134,8 @@ Widget _buildTripItem(Trip trip, int index) {
 
   @override
   Widget build(BuildContext context) {
+    final trips = ref.watch(tripsProvider);
+    
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Планировщик'),
@@ -194,7 +189,7 @@ Widget _buildTripItem(Trip trip, int index) {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: _trips.isEmpty
+                child: trips.isEmpty
                     ? const Center(
                         child: Text(
                           'Пока нет запланированных поездок\nДобавьте первую!',
@@ -206,9 +201,9 @@ Widget _buildTripItem(Trip trip, int index) {
                         ),
                       )
                     : ListView.builder(
-                        itemCount: _trips.length,
+                        itemCount: trips.length,
                         itemBuilder: (context, index) {
-                          final trip = _trips[index];
+                          final trip = trips[index];
                           return Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             child: CupertinoButton(

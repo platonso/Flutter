@@ -1,30 +1,20 @@
 import 'package:flutter/cupertino.dart';
-import '../../../services/data_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../providers/statistics_providers.dart';
 
-class StatisticsScreen extends StatefulWidget {
+class StatisticsScreen extends ConsumerWidget {
   const StatisticsScreen({super.key});
 
   @override
-  State<StatisticsScreen> createState() => _StatisticsScreenState();
-}
-
-class _StatisticsScreenState extends State<StatisticsScreen> {
-  final DataService _dataService = DataService();
-
-  @override
-  void initState() {
-    super.initState();
-    _dataService.initializeDefaultData();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final countriesCount = _dataService.countriesCount;
-    final visitedCountriesCount = _dataService.visitedCountriesCount;
-    final tripsCount = _dataService.tripsCount;
-    final completedTripsCount = _dataService.completedTripsCount;
-    final attractionsCount = _dataService.attractionsCount;
-    final favoriteAttractionsCount = _dataService.favoriteAttractionsCount;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final countriesCount = ref.watch(countriesCountProvider);
+    final visitedCountriesCount = ref.watch(visitedCountriesCountProvider);
+    final tripsCount = ref.watch(tripsCountProvider);
+    final completedTripsCount = ref.watch(completedTripsCountProvider);
+    final attractionsCount = ref.watch(attractionsCountProvider);
+    final favoriteAttractionsCount = ref.watch(favoriteAttractionsCountProvider);
+    final checklistItemsCount = ref.watch(checklistItemsCountProvider);
+    final packedItemsCount = ref.watch(packedItemsCountProvider);
 
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(middle: Text('Статистика')),
@@ -61,6 +51,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 favoriteAttractionsCount.toString(),
                 CupertinoColors.systemOrange,
               ),
+              const SizedBox(height: 16),
+              _buildStatCard(
+                '✅ Чек-лист',
+                'Всего вещей',
+                checklistItemsCount.toString(),
+                'Собрано',
+                packedItemsCount.toString(),
+                CupertinoColors.systemPurple,
+              ),
               const SizedBox(height: 24),
               Container(
                 padding: const EdgeInsets.all(20),
@@ -89,6 +88,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       attractionsCount,
                     ),
                     _buildStatRow('В избранном', favoriteAttractionsCount),
+                    _buildStatRow('Всего вещей в чек-листе', checklistItemsCount),
+                    _buildStatRow('Собрано вещей', packedItemsCount),
                   ],
                 ),
               ),

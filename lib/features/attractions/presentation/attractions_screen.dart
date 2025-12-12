@@ -1,25 +1,16 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/attraction.dart';
-import '../../../services/data_service.dart';
+import '../../../providers/attractions_providers.dart';
 
-class AttractionsScreen extends StatefulWidget {
+class AttractionsScreen extends ConsumerStatefulWidget {
   const AttractionsScreen({super.key});
 
   @override
-  State<AttractionsScreen> createState() => _AttractionsScreenState();
+  ConsumerState<AttractionsScreen> createState() => _AttractionsScreenState();
 }
 
-class _AttractionsScreenState extends State<AttractionsScreen> {
-  final DataService _dataService = DataService();
-
-  @override
-  void initState() {
-    super.initState();
-    _dataService.initializeDefaultData();
-  }
-
-  List<Attraction> get _attractions => _dataService.attractions;
-
+class _AttractionsScreenState extends ConsumerState<AttractionsScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _iconController = TextEditingController();
@@ -27,15 +18,13 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
 
   void _addAttraction() {
     if (_nameController.text.isEmpty || _locationController.text.isEmpty) return;
-    setState(() {
-      _dataService.addAttraction(Attraction(
-        name: _nameController.text,
-        location: _locationController.text,
-        icon: _iconController.text.isNotEmpty ? _iconController.text : '📍',
-        description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
-        isFavorite: false,
-      ));
-    });
+    ref.read(attractionsProvider.notifier).addAttraction(Attraction(
+      name: _nameController.text,
+      location: _locationController.text,
+      icon: _iconController.text.isNotEmpty ? _iconController.text : '📍',
+      description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
+      isFavorite: false,
+    ));
     _nameController.clear();
     _locationController.clear();
     _iconController.clear();
@@ -43,22 +32,21 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
   }
 
   void _toggleFavorite(int index) {
-    setState(() {
-      final attraction = _attractions[index];
-      _dataService.updateAttraction(index, attraction.copyWith(
-        isFavorite: !attraction.isFavorite,
-      ));
-    });
+    final attractions = ref.read(attractionsProvider);
+    final attraction = attractions[index];
+    ref.read(attractionsProvider.notifier).updateAttraction(index, attraction.copyWith(
+      isFavorite: !attraction.isFavorite,
+    ));
   }
 
   void _deleteAttraction(int index) {
-    setState(() {
-      _dataService.deleteAttraction(index);
-    });
+    ref.read(attractionsProvider.notifier).deleteAttraction(index);
   }
 
   @override
   Widget build(BuildContext context) {
+    final attractions = ref.watch(attractionsProvider);
+    
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Достопримечательности'),
@@ -116,9 +104,9 @@ class _AttractionsScreenState extends State<AttractionsScreen> {
               const SizedBox(height: 16),
               Expanded(
                 child: ListView.builder(
-                  itemCount: _attractions.length,
+                  itemCount: attractions.length,
                   itemBuilder: (context, index) {
-                    final attraction = _attractions[index];
+                    final attraction = attractions[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       child: CupertinoButton(

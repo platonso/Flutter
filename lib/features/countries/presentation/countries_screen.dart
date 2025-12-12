@@ -1,25 +1,16 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/country.dart';
-import '../../../services/data_service.dart';
+import '../../../providers/countries_providers.dart';
 
-class CountriesScreen extends StatefulWidget {
+class CountriesScreen extends ConsumerStatefulWidget {
   const CountriesScreen({super.key});
 
   @override
-  State<CountriesScreen> createState() => _CountriesScreenState();
+  ConsumerState<CountriesScreen> createState() => _CountriesScreenState();
 }
 
-class _CountriesScreenState extends State<CountriesScreen> {
-  final DataService _dataService = DataService();
-
-  @override
-  void initState() {
-    super.initState();
-    _dataService.initializeDefaultData();
-  }
-
-  List<Country> get _countries => _dataService.countries;
-
+class _CountriesScreenState extends ConsumerState<CountriesScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _capitalController = TextEditingController();
   final TextEditingController _flagController = TextEditingController();
@@ -27,15 +18,13 @@ class _CountriesScreenState extends State<CountriesScreen> {
 
   void _addCountry() {
     if (_nameController.text.isEmpty || _capitalController.text.isEmpty) return;
-    setState(() {
-      _dataService.addCountry(Country(
-        name: _nameController.text,
-        capital: _capitalController.text,
-        flag: _flagController.text.isNotEmpty ? _flagController.text : '🏳️',
-        description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
-        isVisited: false,
-      ));
-    });
+    ref.read(countriesProvider.notifier).addCountry(Country(
+      name: _nameController.text,
+      capital: _capitalController.text,
+      flag: _flagController.text.isNotEmpty ? _flagController.text : '🏳️',
+      description: _descController.text.isNotEmpty ? _descController.text : 'Описание отсутствует',
+      isVisited: false,
+    ));
     _nameController.clear();
     _capitalController.clear();
     _flagController.clear();
@@ -43,22 +32,21 @@ class _CountriesScreenState extends State<CountriesScreen> {
   }
 
   void _toggleVisited(int index) {
-    setState(() {
-      final country = _countries[index];
-      _dataService.updateCountry(index, country.copyWith(
-        isVisited: !country.isVisited,
-      ));
-    });
+    final countries = ref.read(countriesProvider);
+    final country = countries[index];
+    ref.read(countriesProvider.notifier).updateCountry(index, country.copyWith(
+      isVisited: !country.isVisited,
+    ));
   }
 
   void _deleteCountry(int index) {
-    setState(() {
-      _dataService.deleteCountry(index);
-    });
+    ref.read(countriesProvider.notifier).deleteCountry(index);
   }
 
   @override
   Widget build(BuildContext context) {
+    final countries = ref.watch(countriesProvider);
+    
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Страны'),
@@ -116,9 +104,9 @@ class _CountriesScreenState extends State<CountriesScreen> {
               const SizedBox(height: 16),
               Expanded(
                 child: ListView.builder(
-                  itemCount: _countries.length,
+                  itemCount: countries.length,
                   itemBuilder: (context, index) {
-                    final country = _countries[index];
+                    final country = countries[index];
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       child: CupertinoButton(

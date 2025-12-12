@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/home/presentation/home_screen.dart';
 
 void main() {
-  runApp(const TravelApp());
+  runApp(
+    const ProviderScope(
+      child: TravelApp(),
+    ),
+  );
 }
 
 class TravelApp extends StatelessWidget {
