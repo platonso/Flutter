@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'features/home/presentation/home_screen.dart';
+import 'features/auth/presentation/login_screen.dart';
 
 void main() {
   runApp(
@@ -21,7 +21,7 @@ class TravelApp extends StatelessWidget {
         primaryColor: CupertinoColors.activeBlue,
         scaffoldBackgroundColor: CupertinoColors.systemBackground,
       ),
-      home: const HomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }
