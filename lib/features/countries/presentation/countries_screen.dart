@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/ui_constants.dart';
 import '../../../models/country.dart';
 import '../../../providers/countries_providers.dart';
 
@@ -48,148 +49,147 @@ class _CountriesScreenState extends ConsumerState<CountriesScreen> {
     final countries = ref.watch(countriesProvider);
     
     return CupertinoPageScaffold(
+      backgroundColor: AppColors.background,
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Страны'),
+        backgroundColor: AppColors.surface,
+        border: null,
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Header
+              Text(
+                'Ваши страны',
+                style: AppStyles.headerTitle,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Отмечайте места, где вы уже побывали',
+                style: AppStyles.cardSubtitle,
+              ),
+              const SizedBox(height: 24),
+
+              // Form
               Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: CupertinoColors.systemGrey6,
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                padding: const EdgeInsets.all(20),
+                decoration: AppStyles.cardDecoration,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Добавить страну',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                    ),
+                    Text('Добавить новую страну', style: AppStyles.cardTitle),
+                    const SizedBox(height: 16),
+                    _buildInput(_nameController, 'Название страны'),
                     const SizedBox(height: 12),
-                    CupertinoTextField(
-                      controller: _nameController,
-                      placeholder: 'Название страны',
-                      padding: const EdgeInsets.all(12),
-                    ),
-                    const SizedBox(height: 8),
-                    CupertinoTextField(
-                      controller: _capitalController,
-                      placeholder: 'Столица',
-                      padding: const EdgeInsets.all(12),
-                    ),
-                    const SizedBox(height: 8),
-                    CupertinoTextField(
-                      controller: _flagController,
-                      placeholder: 'Флаг (эмодзи, напр. 🇷🇺)',
-                      padding: const EdgeInsets.all(12),
-                    ),
-                    const SizedBox(height: 8),
-                    CupertinoTextField(
-                      controller: _descController,
-                      placeholder: 'Описание (необязательно)',
-                      padding: const EdgeInsets.all(12),
-                      maxLines: 2,
-                    ),
+                    _buildInput(_capitalController, 'Столица'),
                     const SizedBox(height: 12),
-                    CupertinoButton.filled(
-                      onPressed: _addCountry,
-                      child: const Text('Добавить страну'),
+                    _buildInput(_flagController, 'Флаг (эмодзи)'),
+                    const SizedBox(height: 12),
+                    _buildInput(_descController, 'Описание', maxLines: 2),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: CupertinoButton.filled(
+                        onPressed: _addCountry,
+                        child: const Text('Добавить'),
+                      ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: countries.length,
-                  itemBuilder: (context, index) {
-                    final country = countries[index];
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () => _toggleVisited(index),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: country.isVisited
-                                ? CupertinoColors.systemGreen.withOpacity(0.1)
-                                : CupertinoColors.systemGrey6,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: country.isVisited
-                                  ? CupertinoColors.systemGreen
-                                  : CupertinoColors.systemGrey4,
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
+              const SizedBox(height: 24),
+
+              // List
+              ListView.separated(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: countries.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  final country = countries[index];
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: AppStyles.cardDecoration,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(country.flag, style: const TextStyle(fontSize: 40)),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                country.flag,
-                                style: const TextStyle(fontSize: 32),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
                                       country.name,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                        color: CupertinoColors.label,
-                                      ),
+                                      style: AppStyles.cardTitle,
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Столица: ${country.capital}',
-                                      style: const TextStyle(
+                                  ),
+                                  if (country.isVisited)
+                                    const Icon(
+                                      CupertinoIcons.checkmark_seal_fill,
+                                      color: AppColors.primary,
+                                      size: 20,
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(country.capital, style: AppStyles.cardSubtitle),
+                              const SizedBox(height: 8),
+                              Text(
+                                country.description,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textMain,
+                                  height: 1.4,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  CupertinoButton(
+                                    padding: EdgeInsets.zero,
+                                    minSize: 0,
+                                    onPressed: () => _toggleVisited(index),
+                                    child: Text(
+                                      country.isVisited ? 'Не был' : 'Посетил',
+                                      style: TextStyle(
                                         fontSize: 14,
-                                        color: CupertinoColors.secondaryLabel,
+                                        color: country.isVisited 
+                                            ? CupertinoColors.systemRed 
+                                            : AppColors.primary,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      country.description,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: CupertinoColors.tertiaryLabel,
+                                  ),
+                                  const SizedBox(width: 16),
+                                  CupertinoButton(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    onPressed: () => _deleteCountry(index),
+                                    child: const Text(
+                                      'Удалить',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: CupertinoColors.systemGrey,
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                country.isVisited
-                                    ? CupertinoIcons.checkmark_circle_fill
-                                    : CupertinoIcons.circle,
-                                color: country.isVisited
-                                    ? CupertinoColors.systemGreen
-                                    : CupertinoColors.systemGrey,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 4),
-                              CupertinoButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () => _deleteCountry(index),
-                                child: const Icon(
-                                  CupertinoIcons.trash,
-                                  color: CupertinoColors.systemRed,
-                                  size: 20,
-                                ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -197,6 +197,23 @@ class _CountriesScreenState extends ConsumerState<CountriesScreen> {
       ),
     );
   }
+
+  Widget _buildInput(
+    TextEditingController controller, 
+    String placeholder, 
+    {int maxLines = 1}
+  ) {
+    return CupertinoTextField(
+      controller: controller,
+      placeholder: placeholder,
+      padding: const EdgeInsets.all(14),
+      maxLines: maxLines,
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: CupertinoColors.systemGrey5),
+      ),
+      style: const TextStyle(fontSize: 15),
+    );
+  }
 }
-
-
