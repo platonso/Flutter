@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import '../../auth/presentation/registration_screen.dart';
-import '../../home/presentation/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,8 +21,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLogin() {
     // В реальном приложении здесь была бы логика авторизации
-    Navigator.of(context).pushReplacement(
-      CupertinoPageRoute(builder: (context) => const HomeScreen()),
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Успешно'),
+        content: const Text('Вы успешно вошли в систему (демо)'),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('ОК'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
     );
   }
 
